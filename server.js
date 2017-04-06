@@ -1,22 +1,26 @@
-var express = require('express');
-var app     = express(); //application instance
-var PORT    = process.env.PORT || 3000;
-var todos   = [{
-	id          : 1,
-	description : 'meet mom for lunch',
-	completed   : false
-},
-{
-	id          : 2,
-	description : 'Goto market',
-	completed   : false
-},
-{
-	id          : 3,
-	description : 'Goto dance class',
-	completed   : true
-}
-];
+var express    = require('express');
+var app        = express(); //application instance
+var bodyParser = require('body-parser');
+var PORT       = process.env.PORT || 3000;
+// var todos   = [{
+// 	id          : 1,
+// 	description : 'meet mom for lunch',
+// 	completed   : false
+// },
+// {
+// 	id          : 2,
+// 	description : 'Goto market',
+// 	completed   : false
+// },
+// {
+// 	id          : 3,
+// 	description : 'Goto dance class',
+// 	completed   : true
+// }
+// ];
+var todos      = [];
+var todoNextID = 1;
+app.use(bodyParser.json()); //process incoming JSON request
 
 app.get('/',function(req,res){
 	res.send('ToDo Api route....');
@@ -52,9 +56,23 @@ app.get('/todos/:id',function(req,res){
 	// 	}
 	// 	itr = itr + 1 ;
 	// }
-	res.send(req.params.id);
+	// res.send(req.params.id);
 });
 
+app.post('/todos',function(req,res){
+	var body = req.body; //access
+
+  //add id 
+
+  body.id = todoNextID ;          //body.id = todoNextID++ ;
+  todoNextID = todoNextID + 1 ;
+
+  //push into array
+  todos.push(body);
+	//console.log('description :' , body.description);
+	
+	res.json(body);
+});
 
 
 app.listen(PORT,function(){
