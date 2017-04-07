@@ -2,6 +2,8 @@ var express    = require('express');
 var app        = express(); //application instance
 var bodyParser = require('body-parser');
 var PORT       = process.env.PORT || 3000;
+var _          = require('underscore');
+
 // var todos   = [{
 // 	id          : 1,
 // 	description : 'meet mom for lunch',
@@ -22,58 +24,69 @@ var todos      = [];
 var todoNextID = 1;
 app.use(bodyParser.json()); //process incoming JSON request
 
+//--------------------------------------------------------------routes-----
 app.get('/',function(req,res){
 	res.send('ToDo Api route....');
 });
 
-
+//-------------------------------------------------------------------------
 app.get('/todos',function(req,res){
 	//res.send(JSON.stringify(todos));
 	res.json(todos);
 
 });
-
+//-------------------------------------------------------------------------
 app.get('/todos/:id',function(req,res){
-	  var todoID = parseInt(req.params.id,10); //A parameter is always a string
-
-	  var matchedToDo;
-	  todos.forEach(function(todo){
-	  	if(todoID === todo.id){
-	  		matchedToDo = todo;
-	  	}
-	  });
+	  //var todoID = parseInt(req.params.id,10); //A parameter is always a string
+    // var matchedToDo;
+	  // todos.forEach(function(todo){
+	  // 	if(todoID === todo.id){
+	  // 		matchedToDo = todo;
+	  // 	}
+	  // });
+    //  if(matchedToDo){
+	  // 	res.json(matchedToDo);
+	  // }else{
+	  // 	res.status(404).send();
+	  // }
+	  var todoID = parseInt(req.params.id,10);
+	  var matchedToDo = _.findWhere(todos, {id :todoID});
+	   //findWhere Looks through the list and returns the first value that matches all of the key-value pairs listed in properties.
+     //If no match is found, or if list is empty, undefined will be returned.
+	 
 	  if(matchedToDo){
-	  	res.json(matchedToDo);
-	  }else{
-	  	res.status(404).send();
-	  }
-	// var limit  = todos.length;
-	// //console.log(limit);
-	// var itr    = 0;
-	// while(itr < limit){
-	// 	if(todos.itr.id === todoID){
-	// 		res.json(todos.itr);
-	// 	}
-	// 	itr = itr + 1 ;
-	// }
-	// res.send(req.params.id);
-});
-
+			res.json(matchedToDo);
+		}else{
+			console.log('Not Found!!');
+		  res.status(404).send();
+		  console.log('Error 404 sent!');
+		}
+	});
+//-------------------------------------------------------------------------
 app.post('/todos',function(req,res){
-	var body = req.body; //access
-
+	//var body = req.body; //access
+	var body = _.pick(req.body,'description','completed');
+	/*
+	 pick_.pick(object, *keys) 
+   Return a copy of the object, filtered to only have 
+   values for the whitelisted keys (or array of valid keys). Alternatively accepts a predicate indicating which keys to pick.
+  */
+	if(!_.isBoolean (body.completed) || !_.isString(body.description) || body.description.trim().length === 0 ){
+		return res.status(400).send();
+	}
+	body.description = body.description.trim();
   //add id 
-
-  body.id = todoNextID ;          //body.id = todoNextID++ ;
+	body.id = todoNextID ;          //body.id = todoNextID++ ;
   todoNextID = todoNextID + 1 ;
 
   //push into array
   todos.push(body);
 	//console.log('description :' , body.description);
-	
-	res.json(body);
-});
 
+	res.json(body);
+
+});
+//-------------------------------------------------------------------------
 
 app.listen(PORT,function(){
 	console.log('Server started...');
