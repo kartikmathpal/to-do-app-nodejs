@@ -88,6 +88,23 @@ app.post('/todos',function(req,res){
 });
 //-------------------------------------------------------------------------
 
+app.delete('/todos/:id',function(req,res){
+
+	var todoID = parseInt(req.params.id,10);
+  var matchedToDo = _.findWhere(todos, {id :todoID});
+  if(matchedToDo){
+  	/*
+	without_.without(array, *values) 
+  Returns a copy of the array with all instances of the values removed.
+	*/
+  todos = _.without(todos,matchedToDo);	
+  res.send(todos);
+  }
+  else{
+  	res.status(404).json({"error" : "no to-do found with that id!!"});
+  }
+});
+//-------------------------------------------------------------------------
 app.listen(PORT,function(){
 	console.log('Server started...');
 });
