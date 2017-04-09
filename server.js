@@ -105,6 +105,40 @@ app.delete('/todos/:id',function(req,res){
   }
 });
 //-------------------------------------------------------------------------
+app.put('/todos/:id',function(req,res){
+		var todoID = parseInt(req.params.id,10);
+		var matchedToDo = _.findWhere(todos,{id : todoID});
+		var body = _.pick(req.body,'description','completed');
+		var validAttributes = {};
+		//hasOwnProperty returns a boolean
+		if(body.hasOwnProperty('completed') && _.isBoolean(body.completed)){ //if completed exists and its a boolean
+				validAttributes.completed = body.completed;
+
+		}else if(body.hasOwnProperty('completed')){
+				return res.status(400).send();
+		}
+		if(body.hasOwnProperty('description') && _.isString('description') && body.description.trim().listen > 0){
+				validAttributes.description = body.description;
+		}else if(body.hasOwnProperty('description')){
+				res.status(400).send();
+		}
+		
+		//res.send(validAttributes);
+
+		/*
+			_.extend(destination, *sources) 
+			Shallowly copy all of the properties in the source objects over to the destination object, 
+			and return the destination object. Any nested objects or arrays will be copied by reference, 
+			not duplicated. It's in-order, so the last source will override properties of the same name in previous arguments.
+
+		*/
+		//objects in javascript are passed by reference
+		 _.extend(matchedToDo,validAttributes);
+		 res.json(matchedToDo);
+
+
+});
+//-------------------------------------------------------------------------
 app.listen(PORT,function(){
 	console.log('Server started...');
 });
