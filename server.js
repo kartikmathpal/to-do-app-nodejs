@@ -32,7 +32,17 @@ app.get('/',function(req,res){
 //-------------------------------------------------------------------------
 app.get('/todos',function(req,res){
 	//res.send(JSON.stringify(todos));
-	res.json(todos);
+	//res.json(todos);
+	var queryParams = req.query;
+	var filteredTodos = todos;
+  //adding filter
+	if(queryParams.hasOwnProperty('completed') && queryParams.completed == 'true'){
+		filteredTodos = _.where(filteredTodos,{completed:true}); //_.where(arr,searchParameter)
+	}
+	else if(queryParams.hasOwnProperty('completed') && queryParams.completed == 'false'){
+			filteredTodos = _.where(filteredTodos,{completed:false}); 
+	}
+	res.send(filteredTodos);
 
 });
 //-------------------------------------------------------------------------
