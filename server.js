@@ -39,20 +39,25 @@ app.get('/todos',function(req,res){
 app.get('/todos/:id',function(req,res){
 	   
 	  var todoID = parseInt(req.params.id,10);
-	  var matchedToDo = _.findWhere(todos, {id :todoID});
 
-	  if(matchedToDo){
-			res.json(matchedToDo);
-		}else{
-			console.log('Not Found!!');
-		  res.status(404).send();
-		  console.log('Error 404 sent!');
-		}
+	  db.todo.findById(todoID).then(function(todo){
+	  		if(!!todo){
+
+	  			res.json(todo.toJSON());
+	  		}
+	  		else{
+	  			res.status(400).send();
+	  		}
+	  },function(e){
+	  			res.status(500).send();
+	  });
+
 	});
 //--------------------------------------CREATE---------------------------------------------------------------------------
 app.post('/todos',function(req,res){
 	 
 	var body = _.pick(req.body,'description','completed');
+
 	db.todo.create(body).then(function(todo){
 		res.json(todo.toJSON()); //since todo obj is not  a simple obj, we conv it to json
 	},function(e){
