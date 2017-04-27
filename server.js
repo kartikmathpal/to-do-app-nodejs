@@ -114,6 +114,3 @@ db.sequelize.sync().then(function(){
 	console.log('Server started...');
 	});
 });
-// app.listen(PORT,function(){
-// 	console.log('Server started...');
-// });
